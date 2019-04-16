@@ -1,15 +1,17 @@
-# fdk-concept-builder
-A stand alone library to instantiate concepts, deserialize/serialize them in RDF and Json according to [DIFIs standard](https://doc.difi.no/data/forvaltningsstandard-begrepsbeskrivelser/)
-
-See *Forvaltningsstandard for tilgjengeliggjøring av begrepsbeskrivelser*: [begrep-skos-ap-no](https://doc.difi.no/data/begrep-skos-ap-no/)
+package no.fdk.concept;
 
 
-# Usage
+import no.fdk.concept.builder.ConceptBuilder;
+import no.fdk.concept.builder.SKOSNO;
+import org.apache.jena.rdf.model.Model;
+import org.junit.jupiter.api.Test;
 
-## Concept
+public class ConceptBuilderTest {
 
-```java
-Model conceptModel = ConceptBuilder.builder("http://my.org/concept/application")
+    @Test
+    public void testConceptBuilder() {
+
+        Model conceptModel = ConceptBuilder.builder("http://my.org/concept/application")
                 .publisher("123456789")
                 .definitionBuilder(SKOSNO.Definisjon)
                     .text("an application is a program", "en")
@@ -34,9 +36,7 @@ Model conceptModel = ConceptBuilder.builder("http://my.org/concept/application")
                     .build()
                 .build();
 
-        
+
         conceptModel.write(System.out, "TURTLE");
-```
-
-
-## ConceptCollection
+    }
+}
