@@ -102,3 +102,11 @@ Model conceptModel = ConceptBuilder.builder("http://my.org/concept/application")
 
 
 ## ConceptCollection
+
+TBD
+
+# References
+
+- [Felles datakatalog](https://github.com/Informasjonsforvaltning)
+- [Forvaltningsstandard for begrepsbeskrivelser](https://doc.difi.no/data/forvaltningsstandard-begrepsbeskrivelser/)
+- [Tilgjengeliggjøring av begrepsbeskrivelser basert på SKOS](https://doc.difi.no/data/begrep-skos-ap-no/)
