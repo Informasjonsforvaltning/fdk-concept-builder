@@ -1,6 +1,7 @@
 package no.fdk.concept;
 
 
+import no.fdk.concept.builder.Builders;
 import no.fdk.concept.builder.ConceptBuilder;
 import no.fdk.concept.builder.SKOSNO;
 import org.apache.jena.rdf.model.Model;
@@ -11,7 +12,7 @@ public class ConceptBuilderTest {
     @Test
     public void testConceptBuilder() {
 
-        Model conceptModel = ConceptBuilder.builder("http://my.org/concept/application")
+        Model conceptModel = Builders.conceptBuilder("http://my.org/concept/application")
                 .publisher("123456789")
                 .definitionBuilder(SKOSNO.Definisjon)
                     .text("an application is a program", "en")
@@ -38,5 +39,19 @@ public class ConceptBuilderTest {
 
 
         conceptModel.write(System.out, "TURTLE");
+    }
+
+    @Test
+    public void testCollectionBuilder() {
+        Model collectionModel = Builders.collectionBuilder("http://my.org/collectino/first")
+                .publisher("123456789")
+                .member(Builders.conceptBuilder("https://my.org/concept/term")
+                        .preferredTerm("term", "en"))
+                .member(Builders.conceptBuilder("https://my.org/concept/api")
+                        .preferredTerm("api", "en"))
+                .member(Builders.conceptBuilder("https://my.org/concept/rest"))
+                .build();
+
+        collectionModel.write(System.out, "TURTLE");
     }
 }

@@ -9,7 +9,7 @@ See *Forvaltningsstandard for tilgjengeliggjøring av begrepsbeskrivelser*: [beg
 ## Concept
 
 ```java
-Model conceptModel = ConceptBuilder.builder("http://my.org/concept/application")
+Model conceptModel = Builders.conceptBuilder("http://my.org/concept/application")
                 .publisher("123456789")
                 .definitionBuilder(SKOSNO.Definisjon)
                     .text("an application is a program", "en")
@@ -34,7 +34,7 @@ Model conceptModel = ConceptBuilder.builder("http://my.org/concept/application")
                     .build()
                 .build();
 
-        
+
         conceptModel.write(System.out, "TURTLE");
 ```
 
@@ -103,7 +103,62 @@ Model conceptModel = ConceptBuilder.builder("http://my.org/concept/application")
 
 ## ConceptCollection
 
-TBD
+```java
+        Model collectionModel = Builders.collectionBuilder("http://my.org/collectino/first")
+                .publisher("123456789")
+                .member(Builders.conceptBuilder("https://my.org/concept/term")
+                        .preferredTerm("term", "en"))
+                .member(Builders.conceptBuilder("https://my.org/concept/api")
+                        .preferredTerm("api", "en"))
+                .member(Builders.conceptBuilder("https://my.org/concept/rest"))
+                .build();
+
+        collectionModel.write(System.out, "TURTLE");
+```
+
+Wich results in the following RDF/TURTLE.
+
+```turtle
+@prefix schema: <http://schema.org/> .
+@prefix iso:   <http://iso.org/25012/2008/dataquality/> .
+@prefix spdx:  <http://spdx.org/rdf/terms#> .
+@prefix adms:  <http://www.w3.org/ns/adms#> .
+@prefix skosxl: <http://www.w3.org/2008/05/skos-xl#> .
+@prefix owl:   <http://www.w3.org/2002/07/owl#> .
+@prefix skosno: <http://difi.no/skosno#> .
+@prefix dqv:   <http://www.w3.org/ns/dqv#> .
+@prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
+@prefix skos:  <http://www.w3.org/2004/02/skos/core#> .
+@prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix vcard: <http://www.w3.org/2006/vcard/ns#> .
+@prefix xkos:  <http://rdf-vocabulary.ddialliance.org/xkos#> .
+@prefix oa:    <http://www.w3.org/ns/prov#> .
+@prefix dct:   <http://purl.org/dc/terms/> .
+@prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix dcatno: <http://difi.no/dcatno#> .
+@prefix dcat:  <http://www.w3.org/ns/dcat#> .
+@prefix foaf:  <http://xmlns.com/foaf/0.1/> .
+
+<http://my.org/collectino/first>
+        a              skos:Collection ;
+        dct:publisher  <https://data.brreg.no/enhetsregisteret/api/enheter/123456789> ;
+        skos:member    <https://my.org/concept/rest> , <https://my.org/concept/api> , <https://my.org/concept/term> .
+
+<https://my.org/concept/rest>
+        a       skos:Concept .
+
+<https://my.org/concept/api>
+        a                 skos:Concept ;
+        skosxl:prefLabel  [ a                   skosxl:Label ;
+                            skosxl:literalForm  "api"@en
+                          ] .
+
+<https://my.org/concept/term>
+        a                 skos:Concept ;
+        skosxl:prefLabel  [ a                   skosxl:Label ;
+                            skosxl:literalForm  "term"@en
+                          ] .
+```
 
 # References
 
