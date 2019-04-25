@@ -177,15 +177,61 @@ Builds a model with various helper builders.
 Takes a Jena Model object and extracts the concepts in the RDF model.
 
 ```java
- ModelReader reader = new ModelReader(conceptModel);
+        ModelReader reader = new ModelReader(conceptModel);
 
         List<Concept> concepts = reader.getConcepts();
 
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
         System.out.println(gson.toJson(concepts));
-
 ```
+
+## JSON Representation
+
+```json
+[
+  {
+    "uri": "http://my.org/concept/application",
+    "identifier": "t3:application",
+    "definition": {
+      "text": {
+        "en": "an application is a program"
+      },
+      "scopeNote": {
+        "nb": "dette gjelder intill videre"
+      },
+      "source": {
+        "prefLabel": {
+          "en": "see the law"
+        }
+      }
+    },
+    "subject": {
+      "no": "tjenester 3.0"
+    },
+    "prefLabel": {
+      "en": "application",
+      "no": "applikasjon"
+    },
+    "altLabel": [
+      {
+        "en": "app"
+      }
+    ],
+    "hiddenLabel": [
+      {
+        "no": "tjeneste",
+        "en": "service"
+      }
+    ],
+    "contactPoint": {
+      "email": "me@org.no",
+      "telephone": "+4755555555"
+    }
+  }
+]
+```
+
 
 
 
