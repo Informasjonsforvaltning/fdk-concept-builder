@@ -25,6 +25,12 @@ public class CollectionBuilder {
         return this;
     }
 
+    public CollectionBuilder member(Resource conceptResource) {
+        resource.addProperty(SKOS.member, conceptResource);
+
+        return this;
+    }
+
     public CollectionBuilder publisher(String organizationNumber) {
         Resource publisher = model.createResource("https://data.brreg.no/enhetsregisteret/api/enheter/" + organizationNumber);
         resource.addProperty(DCTerms.publisher, publisher);

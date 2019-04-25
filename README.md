@@ -104,19 +104,29 @@ Model conceptModel = Builders.conceptBuilder("http://my.org/concept/application"
 ## ConceptCollection
 
 ```java
-        Model collectionModel = Builders.collectionBuilder("http://my.org/collectino/first")
+        ModelBuilder modelBuilder = ModelBuilder.builder();
+
+        Resource concept1 = modelBuilder.conceptBuilder("https://my.org/concept/term")
+                .preferredTerm("term", "en")
+                .getResource();
+
+        Resource concept3 = modelBuilder.conceptBuilder("https://my.org/concept/rest")
+                .alternativeTerm("Representational State Transfer", "en")
+                .getResource();
+
+        Model collectionModel = modelBuilder
+            .collectionBuilder("http://my.org/collectino/first")
                 .publisher("123456789")
-                .member(Builders.conceptBuilder("https://my.org/concept/term")
-                        .preferredTerm("term", "en"))
-                .member(Builders.conceptBuilder("https://my.org/concept/api")
+                .member(concept1)
+                .member(modelBuilder.conceptBuilder("https://my.org/concept/api")
                         .preferredTerm("api", "en"))
-                .member(Builders.conceptBuilder("https://my.org/concept/rest"))
+                .member(concept3)
                 .build();
 
         collectionModel.write(System.out, "TURTLE");
 ```
 
-Wich results in the following RDF/TURTLE.
+### Example output of collection and concepts
 
 ```turtle
 @prefix schema: <http://schema.org/> .

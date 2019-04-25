@@ -1,10 +1,10 @@
 package no.fdk.concept;
 
 
-import no.fdk.concept.builder.Builders;
-import no.fdk.concept.builder.ConceptBuilder;
+import no.fdk.concept.builder.ModelBuilder;
 import no.fdk.concept.builder.SKOSNO;
 import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.Resource;
 import org.junit.jupiter.api.Test;
 
 public class ConceptBuilderTest {
@@ -12,7 +12,8 @@ public class ConceptBuilderTest {
     @Test
     public void testConceptBuilder() {
 
-        Model conceptModel = Builders.conceptBuilder("http://my.org/concept/application")
+        Model conceptModel = ModelBuilder.builder()
+            .conceptBuilder("http://my.org/concept/application")
                 .publisher("123456789")
                 .definitionBuilder(SKOSNO.Definisjon)
                     .text("an application is a program", "en")
@@ -35,21 +36,31 @@ public class ConceptBuilderTest {
                     .email("me@org.no")
                     .telephone("+4755555555")
                     .build()
-                .build();
-
+            .build();
 
         conceptModel.write(System.out, "TURTLE");
     }
 
     @Test
     public void testCollectionBuilder() {
-        Model collectionModel = Builders.collectionBuilder("http://my.org/collectino/first")
+
+        ModelBuilder modelBuilder = ModelBuilder.builder();
+
+        Resource concept1 = modelBuilder.conceptBuilder("https://my.org/concept/term")
+                .preferredTerm("term", "en")
+                .getResource();
+
+        Resource concept3 = modelBuilder.conceptBuilder("https://my.org/concept/rest")
+                .alternativeTerm("Representational State Transfer", "en")
+                .getResource();
+
+        Model collectionModel = modelBuilder
+            .collectionBuilder("http://my.org/collectino/first")
                 .publisher("123456789")
-                .member(Builders.conceptBuilder("https://my.org/concept/term")
-                        .preferredTerm("term", "en"))
-                .member(Builders.conceptBuilder("https://my.org/concept/api")
+                .member(concept1)
+                .member(modelBuilder.conceptBuilder("https://my.org/concept/api")
                         .preferredTerm("api", "en"))
-                .member(Builders.conceptBuilder("https://my.org/concept/rest"))
+                .member(concept3)
                 .build();
 
         collectionModel.write(System.out, "TURTLE");

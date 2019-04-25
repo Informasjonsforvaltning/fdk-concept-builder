@@ -3,19 +3,27 @@ package no.fdk.concept.builder;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 
-public class Builders {
+public class ModelBuilder {
 
-    private static Model model = createModel();
+    private Model model = createModel();
 
-    public static CollectionBuilder collectionBuilder(String collectionUri) {
+    /**
+     * Creates a new model of which the builder can add resource.
+     * @return the model builder
+     */
+    public static ModelBuilder builder() {
+        return new ModelBuilder();
+    }
+
+    public CollectionBuilder collectionBuilder(String collectionUri) {
         return new CollectionBuilder(collectionUri, model);
     }
 
-    public static ConceptBuilder conceptBuilder(String conceptUri) {
+    public ConceptBuilder conceptBuilder(String conceptUri) {
         return new ConceptBuilder(conceptUri, model);
     }
 
-    private static Model createModel() {
+    private Model createModel() {
         Model model = ModelFactory.createDefaultModel();
 
         model.setNsPrefix("adms", "http://www.w3.org/ns/adms#");
