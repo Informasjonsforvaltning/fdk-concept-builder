@@ -4,12 +4,15 @@ A stand alone library to instantiate concepts, deserialize/serialize them in RDF
 See *Forvaltningsstandard for tilgjengeliggjøring av begrepsbeskrivelser*: [begrep-skos-ap-no](https://doc.difi.no/data/begrep-skos-ap-no/)
 
 
-# Usage
+# ModelBuilder
+
+Builds a model with various helper builders.
 
 ## Concept
 
 ```java
-Model conceptModel = Builders.conceptBuilder("http://my.org/concept/application")
+        Model conceptModel = ModelBuilder.builder()
+            .conceptBuilder("http://my.org/concept/application")
                 .publisher("123456789")
                 .definitionBuilder(SKOSNO.Definisjon)
                     .text("an application is a program", "en")
@@ -32,8 +35,7 @@ Model conceptModel = Builders.conceptBuilder("http://my.org/concept/application"
                     .email("me@org.no")
                     .telephone("+4755555555")
                     .build()
-                .build();
-
+            .build();
 
         conceptModel.write(System.out, "TURTLE");
 ```
@@ -169,6 +171,24 @@ Model conceptModel = Builders.conceptBuilder("http://my.org/concept/application"
                             skosxl:literalForm  "term"@en
                           ] .
 ```
+
+# ModelReader
+
+Takes a Jena Model object and extracts the concepts in the RDF model.
+
+```java
+ ModelReader reader = new ModelReader(conceptModel);
+
+        List<Concept> concepts = reader.getConcepts();
+
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+
+        System.out.println(gson.toJson(concepts));
+
+```
+
+
+
 
 # References
 

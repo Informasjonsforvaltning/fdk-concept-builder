@@ -7,7 +7,7 @@ import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Resource;
 import org.junit.jupiter.api.Test;
 
-public class ConceptBuilderTest {
+public class ModelBuilderTest {
 
     @Test
     public void testConceptBuilder() {
