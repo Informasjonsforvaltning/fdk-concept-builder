@@ -6,6 +6,7 @@ import no.fdk.concept.builder.ModelBuilder;
 import no.fdk.concept.builder.SKOSNO;
 import no.fdk.concept.reader.ModelReader;
 import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -48,5 +49,19 @@ public class ModelReaderTest {
 
         System.out.println(gson.toJson(concepts));
 
+    }
+
+    @Test
+    public void readFromFile() {
+        String filename = "concept-model.ttl";
+
+        Model model = ModelFactory.createDefaultModel();
+        model.read(filename);
+
+        List<Concept> concepts = new ModelReader(model).getConcepts();
+
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+
+        System.out.println(gson.toJson(concepts));
     }
 }

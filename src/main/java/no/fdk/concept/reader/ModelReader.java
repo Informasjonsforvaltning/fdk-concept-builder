@@ -1,25 +1,9 @@
 package no.fdk.concept.reader;
 
-import no.fdk.concept.Concept;
-import no.fdk.concept.ContactPoint;
-import no.fdk.concept.Definition;
-import no.fdk.concept.Publisher;
-import no.fdk.concept.Source;
+import no.fdk.concept.*;
 import no.fdk.concept.builder.SKOSNO;
-import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.Property;
-import org.apache.jena.rdf.model.RDFNode;
-import org.apache.jena.rdf.model.ResIterator;
-import org.apache.jena.rdf.model.Resource;
-import org.apache.jena.rdf.model.Statement;
-import org.apache.jena.rdf.model.StmtIterator;
-import org.apache.jena.vocabulary.DCAT;
-import org.apache.jena.vocabulary.DCTerms;
-import org.apache.jena.vocabulary.RDF;
-import org.apache.jena.vocabulary.RDFS;
-import org.apache.jena.vocabulary.SKOS;
-import org.apache.jena.vocabulary.SKOSXL;
-import org.apache.jena.vocabulary.VCARD4;
+import org.apache.jena.rdf.model.*;
+import org.apache.jena.vocabulary.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,9 +11,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 
 public class ModelReader {
@@ -37,8 +19,6 @@ public class ModelReader {
     public static final String defaultLanguage = "nb";
     private static final Logger logger = LoggerFactory.getLogger(ModelReader.class);
     private Model model;
-
-    private Map<String, Concept> concepts;
 
     public ModelReader(Model model) {
         this.model = model;
@@ -49,43 +29,47 @@ public class ModelReader {
         return new ModelReader(model);
     }
 
-    public Definition extractDefinition(Resource resource) {
+    public Definition extractDefinition(Resource resource, Resource definitionType) {
         Definition definition = new Definition();
-        definition.setText(new HashMap());
-        definition.setScopeNote(new HashMap());
-        Source source = new Source();
-        definition.setSource(source);
 
-        List<Resource> betydningsbeskivelses = getNamedSubPropertiesAsListOfResources(resource, SKOSNO.betydningsbeskrivelse);
+        List<Resource> betydningsbeskrivelser = getNamedSubPropertiesAsListOfResources(resource, SKOSNO.betydningsbeskrivelse);
 
-        for (Resource betydningsbeskrivelse : betydningsbeskivelses) {
-            //We may need to merge the different language strings from the different betydningsbeskrivelses
-            Map<String, String> definitionAsLanguageLiteral = extractLanguageLiteral(betydningsbeskrivelse, RDFS.label);
-            if (definitionAsLanguageLiteral != null) {
-                definition.getText().putAll(definitionAsLanguageLiteral);
-            }
+        for (Resource betydningsbeskrivelse : betydningsbeskrivelser) {
+            Statement betydningstype = betydningsbeskrivelse.getProperty(RDF.type);
 
-            Map<String, String> noteAsLanguageLiteral = extractLanguageLiteral(betydningsbeskrivelse, SKOS.scopeNote);
-            if (noteAsLanguageLiteral != null) {
-                definition.getScopeNote().putAll(noteAsLanguageLiteral);
-            }
+            if (betydningstype.getObject().asResource().equals(definitionType)) {
 
-            Map<String, String> sourceAsLanguageLiteral = extractLanguageRDFSLabelFromLabel(betydningsbeskrivelse, DCTerms.source);
-            if (sourceAsLanguageLiteral != null) {
-                if (source.getPrefLabel() == null) {
-                    source.setPrefLabel(new HashMap());
+                LanguageLiteral definitionAsLanguageLiteral = extractLanguageLiteral(betydningsbeskrivelse, RDFS.label);
+                if (definitionAsLanguageLiteral != null) {
+                    definition.setText(definitionAsLanguageLiteral);
                 }
 
-                definition.getSource().getPrefLabel().putAll(sourceAsLanguageLiteral);
+                LanguageLiteral noteAsLanguageLiteral = extractLanguageLiteral(betydningsbeskrivelse, SKOS.scopeNote);
+                if (noteAsLanguageLiteral != null) {
+                    definition.setScopeNote(noteAsLanguageLiteral);
+                }
+
+                LanguageLiteral sourceAsLanguageLiteral = extractLanguageRDFSLabelFromLabel(betydningsbeskrivelse, DCTerms.source);
+                if (sourceAsLanguageLiteral != null) {
+                    Source source = new Source();
+                    definition.setSource(source);
+                    source.setPrefLabel(sourceAsLanguageLiteral);
+                }
+
+                LanguageLiteral audience = extractLanguageLiteral(betydningsbeskrivelse, DCTerms.audience);
+                if (audience != null) {
+                    definition.setAudience(audience);
+                }
+
             }
         }
         return definition;
     }
 
-    public static List<Map<String, String>> extractLanguageLiteralFromListOfLabels(Resource resource, Property property) {
-        List<Map<String, String>> result = new ArrayList<>();
+    public List<LanguageLiteral> extractLanguageLiteralFromListOfLabels(Resource resource, Property property) {
+        List<LanguageLiteral> result = new ArrayList<>();
 
-        Map<String, String> tmp = extractLanguageLiteralFromLabel(resource, property);
+        LanguageLiteral tmp = extractLanguageLiteralFromLabel(resource, property);
         if (tmp != null) {
             result.add(tmp);
         }
@@ -93,7 +77,7 @@ public class ModelReader {
     }
 
 
-    protected static String extractPublisherOrgNrFromStmt(Resource publisherResource) {
+    protected String extractPublisherOrgNrFromStmt(Resource publisherResource) {
         try {
             URL url = new URL(publisherResource.getURI());
             String[] parts = url.getPath().split("/");
@@ -105,8 +89,8 @@ public class ModelReader {
         }
     }
 
-    public static Map<String, String> extractLanguageLiteral(Resource resource, Property property) {
-        Map<String, String> map = new HashMap<>();
+    public LanguageLiteral extractLanguageLiteral(Resource resource, Property property) {
+        LanguageLiteral literal = new LanguageLiteral();
 
         StmtIterator iterator = resource.listProperties(property);
 
@@ -117,18 +101,19 @@ public class ModelReader {
                 language = defaultLanguage;
             }
             if (statement.getString() != null && !statement.getString().isEmpty()) {
-                map.put(language, statement.getString());
+                literal.put(language, statement.getString());
             }
         }
 
-        if (map.keySet().size() > 0) {
-            return map;
+        if (literal.keySet().size() > 0) {
+            return literal;
         }
 
         return null;
     }
 
-    public static Map<String, String> extractLanguageRDFSLabelFromLabel(Resource resource, Property property) {
+
+    public LanguageLiteral extractLanguageRDFSLabelFromLabel(Resource resource, Property property) {
         Statement stmt = resource.getProperty(property);
         if (stmt == null) {
             return null;
@@ -140,9 +125,9 @@ public class ModelReader {
     }
 
 
-    public static Map<String, String> extractLanguageLiteralFromLabel(Resource resource, Property property) {
+    public LanguageLiteral extractLanguageLiteralFromLabel(Resource resource, Property property) {
 
-        Map<String, String> result = new HashMap<>();
+        LanguageLiteral result = new LanguageLiteral();
         StmtIterator iterator = resource.listProperties(property);
 
         while (iterator.hasNext()) {
@@ -160,7 +145,7 @@ public class ModelReader {
         return result;
     }
 
-    public static List<Resource> getNamedSubPropertiesAsListOfResources(Resource source, Property target) {
+    public List<Resource> getNamedSubPropertiesAsListOfResources(Resource source, Property target) {
         List<Resource> resources = new ArrayList<>();
         StmtIterator iterator = source.listProperties(target);
         while (iterator.hasNext()) {
@@ -190,7 +175,7 @@ public class ModelReader {
 
         concept.setIdentifier(conceptResource.getProperty(DCTerms.identifier).getString());
 
-        //concept.setPublisher(extractPublisher(conceptResource, DCTerms.publisher));
+        concept.setPublisher(extractPublisher(conceptResource, DCTerms.publisher));
 
         concept.setSubject(extractLanguageLiteral(conceptResource, DCTerms.subject));
 
@@ -202,7 +187,9 @@ public class ModelReader {
 
         concept.setAltLabel(extractLanguageLiteralFromListOfLabels(conceptResource, SKOSXL.altLabel));
 
-        concept.setDefinition(extractDefinition(conceptResource));
+        concept.setDefinition(extractDefinition(conceptResource, SKOSNO.Definisjon));
+
+        concept.setAlternativeDefinition(extractDefinition(conceptResource, SKOSNO.AlternativFormulering));
 
         concept.setContactPoint(extractContactPoint(conceptResource));
 
@@ -221,12 +208,22 @@ public class ModelReader {
             Resource contactPointResource = propertyStmnt.getObject().asResource();
 
             Statement phoneStatement = contactPointResource.getProperty(VCARD4.hasTelephone);
-            String parsedPhoneNumber = parseURIFromStatement(phoneStatement);
-            contactPoint.setTelephone(parsedPhoneNumber);
+            if (phoneStatement != null) {
+                String parsedPhoneNumber = parseURIFromStatement(phoneStatement);
+                contactPoint.setTelephone(parsedPhoneNumber);
+            }
 
             Statement emailStatement = contactPointResource.getProperty(VCARD4.hasEmail);
-            String parsedEmailAddress = parseURIFromStatement(emailStatement);
-            contactPoint.setEmail(parsedEmailAddress);
+            if (emailStatement != null) {
+                String parsedEmailAddress = parseURIFromStatement(emailStatement);
+                contactPoint.setEmail(parsedEmailAddress);
+            }
+
+            Statement orgUnitStatment = contactPointResource.getProperty(VCARD4.hasOrganizationUnit);
+            if (orgUnitStatment != null) {
+                contactPoint.setOrganizationUnit(orgUnitStatment.getObject().asLiteral().getString());
+            }
+
 
         } catch (Exception e) {
             logger.warn("Error when extracting property {} from resource {}", DCAT.contactPoint, resource.getURI(), e);
@@ -240,7 +237,6 @@ public class ModelReader {
             try {
                 URI uri = new URI(statement.getResource().getURI());
                 return uri.getSchemeSpecificPart();
-                //contactPoint.setEmail(uri.getSchemeSpecificPart());
             } catch (URISyntaxException use) {
                 logger.error("Email URI not parsable :" + statement.getObject().toString());
             }

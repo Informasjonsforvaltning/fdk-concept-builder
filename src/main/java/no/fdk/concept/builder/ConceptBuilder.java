@@ -26,6 +26,10 @@ public class ConceptBuilder {
         return model;
     }
 
+    public Resource getResource() {
+        return resource;
+    }
+
     public DefinitionBuilder definitionBuilder(Resource definitionResource) {
         return new DefinitionBuilder(this, definitionResource);
     }

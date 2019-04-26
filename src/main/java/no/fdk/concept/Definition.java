@@ -7,10 +7,10 @@ import java.util.Map;
 
 @Data
 public class Definition {
-    private Map<String, String> text;
-    private Map<String, String> scopeNote;
+    private LanguageLiteral text;
+    private LanguageLiteral scopeNote;
 
     private Source source;
-    private String audience;
+    private LanguageLiteral audience;
     private Date modified;
 }

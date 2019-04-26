@@ -15,6 +15,8 @@ public class Concept {
     @ApiModelProperty("identifier")
     private String identifier;
 
+    private Publisher publisher;
+
     @ApiModelProperty("The definition [skosno:Definisjon]")
     private Definition definition;
 
@@ -22,16 +24,16 @@ public class Concept {
     private Definition alternativeDefinition;
 
     @ApiModelProperty("Subject [dct:subject]")
-    private Map<String, String> subject;
+    private LanguageLiteral subject;
 
     @ApiModelProperty("Preferred labels [skosxl:prefLabel]")
-    private Map<String, String> prefLabel;
+    private LanguageLiteral prefLabel;
 
     @ApiModelProperty("Alternative labels [skos:altLabel]")
-    private List<Map<String, String>> altLabel;
+    private List<LanguageLiteral> altLabel;
 
     @ApiModelProperty("Hidden labels [skos:hiddenLabel]")
-    private List<Map<String, String>> hiddenLabel;
+    private List<LanguageLiteral> hiddenLabel;
 
     @ApiModelProperty("Contact point [dcat:contactPoint]")
     private ContactPoint contactPoint;

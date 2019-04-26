@@ -33,6 +33,7 @@ public class ModelBuilderTest {
                 .deprecatedTerm("service", "en")
                 .deprecatedTerm("tjeneste", "no")
                 .contactPointBuilder()
+                    .organizationUnit("Contact Dep")
                     .email("me@org.no")
                     .telephone("+4755555555")
                     .build()

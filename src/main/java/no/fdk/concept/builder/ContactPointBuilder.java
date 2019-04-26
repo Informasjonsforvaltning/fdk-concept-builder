@@ -24,6 +24,12 @@ public class ContactPointBuilder {
         return this;
     }
 
+    public ContactPointBuilder organizationUnit(String orgUnit) {
+        resource.addProperty(VCARD4.hasOrganizationUnit, orgUnit);
+
+        return this;
+    }
+
     public ConceptBuilder build() {
         parent.getResource().addProperty(DCAT.contactPoint, resource);
 

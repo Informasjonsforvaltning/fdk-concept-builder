@@ -9,4 +9,6 @@ public class ContactPoint {
 
     private String telephone;
 
+    private String organizationUnit;
+
 }

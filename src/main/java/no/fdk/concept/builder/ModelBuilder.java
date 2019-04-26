@@ -20,6 +20,7 @@ public class ModelBuilder {
     }
 
     public ConceptBuilder conceptBuilder(String conceptUri) {
+
         return new ConceptBuilder(conceptUri, model);
     }
 
