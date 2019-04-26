@@ -48,15 +48,14 @@ public class ModelReaderTest {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
         System.out.println(gson.toJson(concepts));
-
     }
 
     @Test
     public void readFromFile() {
-        String filename = "concept-model.ttl";
 
         Model model = ModelFactory.createDefaultModel();
-        model.read(filename);
+
+        model.read("concept-model.ttl");
 
         List<Concept> concepts = new ModelReader(model).getConcepts();
 

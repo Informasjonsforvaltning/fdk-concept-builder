@@ -177,6 +177,8 @@ Builds a model with various helper builders.
 Takes a Jena Model object and extracts the concepts in the RDF model.
 
 ```java
+        Model conceptModel = ...
+
         ModelReader reader = new ModelReader(conceptModel);
 
         List<Concept> concepts = reader.getConcepts();
@@ -232,7 +234,19 @@ Takes a Jena Model object and extracts the concepts in the RDF model.
 ]
 ```
 
+## Read from file
 
+```java
+        Model model = ModelFactory.createDefaultModel();
+
+        model.read("concept-model.ttl");
+
+        List<Concept> concepts = new ModelReader(model).getConcepts();
+
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+
+        System.out.println(gson.toJson(concepts));
+````
 
 
 
