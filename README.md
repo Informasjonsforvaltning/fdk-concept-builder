@@ -1,4 +1,8 @@
 # fdk-concept-builder
+
+*This library is now deprecated. The library is refactored into the following repository and will be supported there:
+https://github.com/difi/skos-ap-no-tools/tree/master/concept-builder*
+
 A stand alone library to instantiate concepts, deserialize/serialize them in RDF and Json according to [DIFIs standard](https://doc.difi.no/data/forvaltningsstandard-begrepsbeskrivelser/)
 
 See *Forvaltningsstandard for tilgjengeliggjøring av begrepsbeskrivelser*: [begrep-skos-ap-no](https://doc.difi.no/data/begrep-skos-ap-no/)
